@@ -50,6 +50,12 @@ const STATUS_OPTIONS = [
   { value: "PAUSED", label: "Paused" },
 ];
 
+const SEARCH_TYPE_OPTIONS = [
+  { value: "name", label: "Name" },
+  { value: "creatorId", label: "Creator ID" },
+  { value: "igAccountId", label: "IG Account ID" },
+];
+
 const getStatusColor = (status) => {
   switch (status) {
     case "ACTIVE":
@@ -100,16 +106,13 @@ const formatDate = (dateString) => {
 export default function InstagramAutomationsPage() {
   const { automationFilters, setAutomationFilters } = useFilterStore();
   const [page, setPage] = useState(1);
-
-  const [creatorIdSearch, setCreatorIdSearch] = useState("");
+  const [searchType, setSearchType] = useState("name");
+  const [searchValue, setSearchValue] = useState("");
 
   const filter = useMemo(() => {
     const f = {};
-    if (automationFilters.searchQuery) {
-      f.name = automationFilters.searchQuery;
-    }
-    if (creatorIdSearch) {
-      f.creatorId = creatorIdSearch;
+    if (searchValue && searchType) {
+      f[searchType] = searchValue;
     }
     if (automationFilters.status) {
       f.status = automationFilters.status;
@@ -118,7 +121,7 @@ export default function InstagramAutomationsPage() {
       f.automationType = automationFilters.automationType;
     }
     return Object.keys(f).length > 0 ? f : undefined;
-  }, [automationFilters, creatorIdSearch]);
+  }, [searchValue, searchType, automationFilters]);
 
   const { data, isLoading, isError, error } = useInstagramAutomations({
     filter,
@@ -148,13 +151,13 @@ export default function InstagramAutomationsPage() {
     setPage(1);
   };
 
-  const handleSearchChange = (e) => {
-    setAutomationFilters({ searchQuery: e.target.value });
+  const handleSearchTypeChange = (value) => {
+    setSearchType(value);
     setPage(1);
   };
 
-  const handleCreatorIdChange = (e) => {
-    setCreatorIdSearch(e.target.value);
+  const handleSearchValueChange = (e) => {
+    setSearchValue(e.target.value);
     setPage(1);
   };
 
@@ -164,13 +167,13 @@ export default function InstagramAutomationsPage() {
       status: null,
       automationType: null,
     });
-    setCreatorIdSearch("");
+    setSearchValue("");
+    setSearchType("name");
     setPage(1);
   };
 
   const hasActiveFilters =
-    automationFilters.searchQuery ||
-    creatorIdSearch ||
+    searchValue ||
     automationFilters.status ||
     automationFilters.automationType;
 
@@ -237,21 +240,27 @@ export default function InstagramAutomationsPage() {
 
         {/* Filters */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
+          <Select value={searchType} onValueChange={handleSearchTypeChange}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Search by" />
+            </SelectTrigger>
+            <SelectContent>
+              {SEARCH_TYPE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 w-4 h-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search by name..."
+              placeholder={`Search by ${SEARCH_TYPE_OPTIONS.find((o) => o.value === searchType)?.label || "..."}...`}
               className="pl-10"
-              value={automationFilters.searchQuery}
-              onChange={handleSearchChange}
+              value={searchValue}
+              onChange={handleSearchValueChange}
             />
           </div>
-          <Input
-            placeholder="Search by Creator ID..."
-            className="w-[220px]"
-            value={creatorIdSearch}
-            onChange={handleCreatorIdChange}
-          />
           <Select
             value={automationFilters.status || "all"}
             onValueChange={handleStatusChange}
