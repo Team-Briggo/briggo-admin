@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useSidebarStore } from '@/stores';
-import { ThemeToggle } from './theme-toggle';
-import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useSidebarStore } from "@/stores";
+import { ThemeToggle } from "./theme-toggle";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function Header({ title }) {
   const { isCollapsed, toggleMobile } = useSidebarStore();
@@ -12,8 +12,7 @@ export function Header({ title }) {
   return (
     <header
       className={cn(
-        'sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6 transition-all duration-300',
-        isCollapsed ? 'md:ml-16' : 'md:ml-64'
+        "flex sticky top-0 z-30 gap-4 items-center px-6 h-16 border-b transition-all duration-300 bg-background",
       )}
     >
       {/* Mobile menu button */}
@@ -23,7 +22,7 @@ export function Header({ title }) {
         className="md:hidden"
         onClick={toggleMobile}
       >
-        <Menu className="h-5 w-5" />
+        <Menu className="w-5 h-5" />
       </Button>
 
       {/* Page title */}
