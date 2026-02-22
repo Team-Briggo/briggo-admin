@@ -213,6 +213,9 @@ function CreatorRow({ creator, isExpanded, onToggle }) {
           )}
         </TableCell>
         <TableCell className="text-xs text-muted-foreground">
+          {creator.analyzedData?.followerCount || "-"}
+        </TableCell>
+        <TableCell className="text-xs text-muted-foreground">
           {creator.referralCode || "-"}
         </TableCell>
         <TableCell className="text-xs text-muted-foreground">
@@ -392,6 +395,7 @@ export default function CreatorsPage() {
                   <TableHead>Phone</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="w-12">IG</TableHead>
+                  <TableHead>Followers</TableHead>
                   <TableHead>Referral</TableHead>
                   <TableHead>Source</TableHead>
                   <TableHead>Tokens</TableHead>
