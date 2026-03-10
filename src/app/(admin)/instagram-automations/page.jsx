@@ -125,7 +125,7 @@ export default function InstagramAutomationsPage() {
 
   const { data, isLoading, isError, error } = useInstagramAutomations({
     filter,
-    pagination: { page, limit: 10 },
+    pagination: { page, limit: 25 },
     sort: { sortBy: "createdAt", sortOrder: "DESC" },
   });
 
@@ -138,7 +138,7 @@ export default function InstagramAutomationsPage() {
   const pausedCount = automations.filter((a) => a.status === "PAUSED").length;
   const totalDmSent = automations.reduce(
     (sum, a) => sum + (a.totalDmSent || 0),
-    0
+    0,
   );
 
   const handleStatusChange = (value) => {
@@ -173,9 +173,7 @@ export default function InstagramAutomationsPage() {
   };
 
   const hasActiveFilters =
-    searchValue ||
-    automationFilters.status ||
-    automationFilters.automationType;
+    searchValue || automationFilters.status || automationFilters.automationType;
 
   return (
     <div className="flex flex-col">
@@ -384,7 +382,7 @@ export default function InstagramAutomationsPage() {
                           variant="outline"
                           className={cn(
                             "text-xs",
-                            getStatusColor(automation.status)
+                            getStatusColor(automation.status),
                           )}
                         >
                           {automation.status || "-"}

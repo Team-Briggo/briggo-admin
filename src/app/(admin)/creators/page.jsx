@@ -255,7 +255,7 @@ export default function CreatorsPage() {
 
   const { data, isLoading, isError, error } = useCreators({
     filter,
-    pagination: { page, limit: 10 },
+    pagination: { page, limit: 25 },
     sort: { sortBy: "createdAt", sortOrder: "DESC" },
   });
 
