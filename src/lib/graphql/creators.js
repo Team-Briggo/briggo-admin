@@ -53,3 +53,20 @@ export const LIST_CREATORS = `
     }
   }
 `;
+
+export const GET_CREATOR_ANALYTICS = `
+  query GetCreatorAnalytics($cognitoId: String!) {
+    getCreatorAnalytics(cognitoId: $cognitoId) {
+      statusCode
+      success
+      message
+      data {
+        cognitoId
+        numberOfAutomations
+        totalTokensUsed
+        totalDmSent
+        tokensLeft
+      }
+    }
+  }
+`;

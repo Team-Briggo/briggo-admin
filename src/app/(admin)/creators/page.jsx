@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { Header } from "@/components/layout/header";
 import { useFilterStore } from "@/stores";
 import { useCreators } from "@/hooks/use-creators";
+import { useCreatorAnalytics } from "@/hooks/use-creator-analytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -98,71 +99,61 @@ const getInitials = (name) => {
 };
 
 function CreatorExpandedDetails({ creator }) {
-  const { analyzedData } = creator;
+  const { data, isLoading, isError } = useCreatorAnalytics(creator.cognitoId);
 
-  if (!analyzedData) {
+  if (isLoading) {
     return (
-      <div className="p-4 text-sm bg-muted/50 text-muted-foreground">
-        No Instagram analysis data available
+      <div className="px-6 py-5 border-t bg-muted/30">
+        <div className="ml-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="p-4 rounded-lg bg-background border">
+              <Skeleton className="w-24 h-3 mb-2" />
+              <Skeleton className="w-16 h-7" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
+  if (isError || !data?.success) {
+    return (
+      <div className="px-6 py-5 border-t bg-muted/30">
+        <div className="ml-10 text-sm text-muted-foreground">
+          Failed to load analytics data
+        </div>
+      </div>
+    );
+  }
+
+  const analytics = data.data;
+
   return (
-    <div className="p-4 border-t bg-muted/50">
-      <div className="flex gap-6">
-        <Avatar className="w-16 h-16">
-          <AvatarImage
-            src={analyzedData.profilePicUrl}
-            alt={analyzedData.fullName}
-          />
-          <AvatarFallback>{getInitials(analyzedData.fullName)}</AvatarFallback>
-        </Avatar>
-
-        <div className="flex-1 space-y-3">
-          <div className="flex gap-2 items-center">
-            <span className="font-semibold">
-              {analyzedData.fullName || "-"}
-            </span>
-            {analyzedData.isVerified && (
-              <BadgeCheck className="w-4 h-4 text-blue-500" />
-            )}
-            <span className="text-muted-foreground">
-              @{analyzedData.username || "-"}
-            </span>
-            {analyzedData.category && (
-              <Badge variant="outline" className="text-xs">
-                {analyzedData.category}
-              </Badge>
-            )}
-          </div>
-
-          <div className="flex gap-6 text-sm">
-            <div>
-              <span className="font-semibold">
-                {formatNumber(analyzedData.followerCount)}
-              </span>
-              <span className="ml-1 text-muted-foreground">followers</span>
-            </div>
-            <div>
-              <span className="font-semibold">
-                {formatNumber(analyzedData.followingCount)}
-              </span>
-              <span className="ml-1 text-muted-foreground">following</span>
-            </div>
-            <div>
-              <span className="font-semibold">
-                {formatNumber(analyzedData.mediaCount)}
-              </span>
-              <span className="ml-1 text-muted-foreground">posts</span>
-            </div>
-          </div>
-
-          {analyzedData.bio && (
-            <p className="max-w-2xl text-sm text-muted-foreground">
-              {analyzedData.bio}
-            </p>
-          )}
+    <div className="px-6 py-5 border-t bg-muted/30">
+      <div className="ml-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="p-4 rounded-lg bg-background border">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Automations</p>
+          <p className="mt-1 text-2xl font-semibold">
+            {formatNumber(analytics.numberOfAutomations)}
+          </p>
+        </div>
+        <div className="p-4 rounded-lg bg-background border">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Tokens Used</p>
+          <p className="mt-1 text-2xl font-semibold">
+            {formatNumber(analytics.totalTokensUsed)}
+          </p>
+        </div>
+        <div className="p-4 rounded-lg bg-background border">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total DMs Sent</p>
+          <p className="mt-1 text-2xl font-semibold">
+            {formatNumber(analytics.totalDmSent)}
+          </p>
+        </div>
+        <div className="p-4 rounded-lg bg-background border">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Tokens Left</p>
+          <p className="mt-1 text-2xl font-semibold">
+            {formatNumber(analytics.tokensLeft)}
+          </p>
         </div>
       </div>
     </div>
@@ -190,7 +181,7 @@ function CreatorRow({ creator, isExpanded, onToggle }) {
           </Button>
         </TableCell>
         <TableCell>
-          <div className="relative inline-block">
+          <div className="inline-block relative">
             {creator.analyzedData?.username ? (
               <a
                 href={`https://instagram.com/${creator.analyzedData.username}`}
@@ -198,7 +189,7 @@ function CreatorRow({ creator, isExpanded, onToggle }) {
                 rel="noopener noreferrer"
                 className="cursor-pointer"
               >
-                <Avatar className="w-8 h-8 hover:ring-2 hover:ring-pink-500 transition-all">
+                <Avatar className="w-8 h-8 transition-all hover:ring-2 hover:ring-pink-500">
                   <AvatarImage
                     src={getImageUrl(creator.profilePicture)}
                     alt={creator.name}
@@ -216,7 +207,7 @@ function CreatorRow({ creator, isExpanded, onToggle }) {
               </Avatar>
             )}
             {creator.analyzedData?.isVerified && (
-              <BadgeCheck className="w-4 h-4 text-blue-500 absolute -bottom-1 -right-1 bg-white rounded-full" />
+              <BadgeCheck className="absolute -right-1 -bottom-1 w-4 h-4 text-blue-500 bg-white rounded-full" />
             )}
           </div>
         </TableCell>
