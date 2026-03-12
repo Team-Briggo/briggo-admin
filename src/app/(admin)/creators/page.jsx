@@ -36,6 +36,12 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const CLOUDFRONT_URL = process.env.NEXT_PUBLIC_CLOUDFRONT_URL || "";
 
@@ -60,6 +66,7 @@ const getStatusColor = (status) => {
 
 const formatNumber = (num) => {
   if (num === null || num === undefined) return "-";
+  if (num >= 1000000000) return `${(num / 1000000000).toFixed(1)}B`;
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
   if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
   return num.toString();
@@ -183,13 +190,35 @@ function CreatorRow({ creator, isExpanded, onToggle }) {
           </Button>
         </TableCell>
         <TableCell>
-          <Avatar className="w-8 h-8">
-            <AvatarImage
-              src={getImageUrl(creator.profilePicture)}
-              alt={creator.name}
-            />
-            <AvatarFallback>{getInitials(creator.name)}</AvatarFallback>
-          </Avatar>
+          <div className="relative inline-block">
+            {creator.analyzedData?.username ? (
+              <a
+                href={`https://instagram.com/${creator.analyzedData.username}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cursor-pointer"
+              >
+                <Avatar className="w-8 h-8 hover:ring-2 hover:ring-pink-500 transition-all">
+                  <AvatarImage
+                    src={getImageUrl(creator.profilePicture)}
+                    alt={creator.name}
+                  />
+                  <AvatarFallback>{getInitials(creator.name)}</AvatarFallback>
+                </Avatar>
+              </a>
+            ) : (
+              <Avatar className="w-8 h-8">
+                <AvatarImage
+                  src={getImageUrl(creator.profilePicture)}
+                  alt={creator.name}
+                />
+                <AvatarFallback>{getInitials(creator.name)}</AvatarFallback>
+              </Avatar>
+            )}
+            {creator.analyzedData?.isVerified && (
+              <BadgeCheck className="w-4 h-4 text-blue-500 absolute -bottom-1 -right-1 bg-white rounded-full" />
+            )}
+          </div>
         </TableCell>
         <TableCell className="font-medium">{creator.name || "-"}</TableCell>
         <TableCell className="text-muted-foreground">
@@ -213,7 +242,22 @@ function CreatorRow({ creator, isExpanded, onToggle }) {
           )}
         </TableCell>
         <TableCell className="text-xs text-muted-foreground">
-          {creator.analyzedData?.followerCount || "-"}
+          {creator.analyzedData?.followerCount ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="cursor-default">
+                    {formatNumber(creator.analyzedData.followerCount)}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {creator.analyzedData.followerCount.toLocaleString()}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            "-"
+          )}
         </TableCell>
         <TableCell className="text-xs text-muted-foreground">
           {creator.referralCode || "-"}

@@ -6,6 +6,7 @@ export const LIST_CREATORS = `
       message
       data {
         id
+        cognitoId
         name
         phone
         email
