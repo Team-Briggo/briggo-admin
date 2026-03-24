@@ -116,7 +116,7 @@ export default function CreditsPage() {
     if (creditFilters.status) {
       f.status = creditFilters.status;
     }
-    return Object.keys(f).length > 0 ? f : undefined;
+    return f;
   }, [creditFilters]);
 
   const { data, isLoading, isError, error } = useCredits({

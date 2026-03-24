@@ -9,6 +9,7 @@ import {
   Users,
   Instagram,
   CreditCard,
+  Building2,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -20,6 +21,11 @@ const menuItems = [
     title: 'Creators',
     href: '/creators',
     icon: Users,
+  },
+  {
+    title: 'Brands',
+    href: '/brands',
+    icon: Building2,
   },
   {
     title: 'Instagram Automations',

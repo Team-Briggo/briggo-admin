@@ -120,7 +120,7 @@ export default function InstagramAutomationsPage() {
     if (automationFilters.automationType) {
       f.automationType = automationFilters.automationType;
     }
-    return Object.keys(f).length > 0 ? f : undefined;
+    return f;
   }, [searchValue, searchType, automationFilters]);
 
   const { data, isLoading, isError, error } = useInstagramAutomations({

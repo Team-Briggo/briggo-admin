@@ -285,7 +285,7 @@ export default function CreatorsPage() {
     if (creatorFilters.profileStatus) {
       f.profileStatus = creatorFilters.profileStatus;
     }
-    return Object.keys(f).length > 0 ? f : undefined;
+    return f;
   }, [creatorFilters]);
 
   const { data, isLoading, isError, error } = useCreators({
