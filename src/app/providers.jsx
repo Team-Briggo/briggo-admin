@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider } from 'next-themes';
-import { AuthProvider } from '@/hooks/use-auth';
-import { useState } from 'react';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "@/hooks/use-auth";
+import { useState } from "react";
 
 export function Providers({ children }) {
   const [queryClient] = useState(
@@ -20,7 +20,7 @@ export function Providers({ children }) {
             retry: 1,
           },
         },
-      })
+      }),
   );
 
   return (

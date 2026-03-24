@@ -12,7 +12,8 @@ export function useAllBrandTags() {
         query: LIST_BRANDS,
         variables: {
           filter: {},
-          pagination: { page: 1, limit: 1000 }, // Fetch many brands to get all tags
+          pagination: { page: 1, limit: 1000 },
+          sort: { sortBy: 'createdAt', sortOrder: 'DESC' },
         },
       });
 

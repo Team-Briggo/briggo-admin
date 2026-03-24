@@ -23,7 +23,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { TagInput } from "@/components/ui/tag-input";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateBrand } from "@/hooks/use-update-brand";
-import { useAllBrandTags } from "@/hooks/use-all-brand-tags";
 
 const CATEGORY_OPTIONS = [
   { value: "ECOMMERCE", label: "E-commerce" },
@@ -46,7 +45,7 @@ const APPROVAL_STATUS_OPTIONS = [
   { value: "REJECTED", label: "Rejected" },
 ];
 
-export function BrandEditDialog({ brand, open, onOpenChange }) {
+export function BrandEditDialog({ brand, open, onOpenChange, allTags = [] }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -70,7 +69,6 @@ export function BrandEditDialog({ brand, open, onOpenChange }) {
   });
 
   const { mutate: updateBrand, isPending } = useUpdateBrand();
-  const { data: allTags = [] } = useAllBrandTags();
 
   useEffect(() => {
     if (brand) {

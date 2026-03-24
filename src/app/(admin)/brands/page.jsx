@@ -498,22 +498,22 @@ export default function BrandsPage() {
                         </TableCell>
                         <TableCell>{formatDate(brand.createdAt)}</TableCell>
                         <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
+                          <div className="flex gap-1 justify-end items-center">
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8"
+                              className="w-8 h-8"
                               onClick={() => handleView(brand)}
                             >
-                              <Eye className="h-4 w-4" />
+                              <Eye className="w-4 h-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8"
+                              className="w-8 h-8"
                               onClick={() => handleEdit(brand)}
                             >
-                              <Pencil className="h-4 w-4" />
+                              <Pencil className="w-4 h-4" />
                             </Button>
                           </div>
                         </TableCell>
@@ -564,6 +564,7 @@ export default function BrandsPage() {
         brand={editingBrand}
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
+        allTags={allTags}
       />
     </div>
   );
