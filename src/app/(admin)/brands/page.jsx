@@ -6,6 +6,7 @@ import { useFilterStore } from "@/stores";
 import { useBrands } from "@/hooks/use-brands";
 import { useAllBrandTags } from "@/hooks/use-all-brand-tags";
 import { BrandEditDialog } from "@/components/brands/brand-edit-dialog";
+import { BrandDetailDialog } from "@/components/brands/brand-detail-dialog";
 import { TagInput } from "@/components/ui/tag-input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ import {
   Search,
   Building2,
   Pencil,
+  Eye,
   X,
   ChevronLeft,
   ChevronRight,
@@ -127,21 +129,26 @@ export default function BrandsPage() {
   const [page, setPage] = useState(1);
   const [editingBrand, setEditingBrand] = useState(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [viewingBrand, setViewingBrand] = useState(null);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const { data: allTags = [] } = useAllBrandTags();
 
   const filter = useMemo(() => {
     const f = {};
     if (brandFilters.searchQuery) f.name = brandFilters.searchQuery;
-    if (brandFilters.profileStatus) f.profileStatus = brandFilters.profileStatus;
-    if (brandFilters.approvalStatus) f.approvalStatus = brandFilters.approvalStatus;
-    if (brandFilters.tags && brandFilters.tags.length > 0) f.tags = brandFilters.tags;
+    if (brandFilters.profileStatus)
+      f.profileStatus = brandFilters.profileStatus;
+    if (brandFilters.approvalStatus)
+      f.approvalStatus = brandFilters.approvalStatus;
+    if (brandFilters.tags && brandFilters.tags.length > 0)
+      f.tags = brandFilters.tags;
     return f;
   }, [brandFilters]);
 
   const { data, isLoading, isError } = useBrands({
     filter,
     pagination: { page, limit: 25 },
-    sort: { sortBy: 'createdAt', sortOrder: 'DESC' },
+    sort: { sortBy: "createdAt", sortOrder: "DESC" },
   });
 
   const handleProfileStatusChange = (value) => {
@@ -167,6 +174,11 @@ export default function BrandsPage() {
   const handleEdit = (brand) => {
     setEditingBrand(brand);
     setIsEditDialogOpen(true);
+  };
+
+  const handleView = (brand) => {
+    setViewingBrand(brand);
+    setIsDetailDialogOpen(true);
   };
 
   const handlePreviousPage = () => {
@@ -195,14 +207,16 @@ export default function BrandsPage() {
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Brands</CardTitle>
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
+              <CardTitle className="text-sm font-medium">
+                Total Brands
+              </CardTitle>
+              <Building2 className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {isLoading ? (
-                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="w-16 h-8" />
                 ) : (
                   data?.pagination?.total || 0
                 )}
@@ -211,13 +225,15 @@ export default function BrandsPage() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Current Page</CardTitle>
+            <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
+              <CardTitle className="text-sm font-medium">
+                Current Page
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {isLoading ? (
-                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="w-16 h-8" />
                 ) : (
                   data?.pagination?.page || 1
                 )}
@@ -226,17 +242,17 @@ export default function BrandsPage() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Showing</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {isLoading ? (
-                  <Skeleton className="h-8 w-32" />
+                  <Skeleton className="w-32 h-8" />
                 ) : data?.data?.length > 0 ? (
                   `${data.pagination.offset + 1}-${Math.min(
                     data.pagination.offset + data.pagination.limit,
-                    data.pagination.total
+                    data.pagination.total,
                   )} of ${data.pagination.total}`
                 ) : (
                   "0"
@@ -250,9 +266,9 @@ export default function BrandsPage() {
         <Card>
           <CardContent className="pt-6 space-y-4">
             {/* Search */}
-            <div className="flex items-center gap-4">
+            <div className="flex gap-4 items-center">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 w-4 h-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Search by brand name..."
                   value={brandFilters.searchQuery}
@@ -267,7 +283,7 @@ export default function BrandsPage() {
                   onClick={handleClearFilters}
                   className="gap-2"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="w-4 h-4" />
                   Clear Filters
                 </Button>
               )}
@@ -275,7 +291,9 @@ export default function BrandsPage() {
 
             {/* Profile Status Tabs */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Profile Status</label>
+              <label className="block mb-2 text-sm font-medium">
+                Profile Status
+              </label>
               <Tabs
                 value={brandFilters.profileStatus || "all"}
                 onValueChange={handleProfileStatusChange}
@@ -292,7 +310,9 @@ export default function BrandsPage() {
 
             {/* Approval Status Tabs */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Approval Status</label>
+              <label className="block mb-2 text-sm font-medium">
+                Approval Status
+              </label>
               <Tabs
                 value={brandFilters.approvalStatus || "all"}
                 onValueChange={handleApprovalStatusChange}
@@ -309,7 +329,9 @@ export default function BrandsPage() {
 
             {/* Tags Filter */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Filter by Tags</label>
+              <label className="block mb-2 text-sm font-medium">
+                Filter by Tags
+              </label>
               <TagInput
                 value={brandFilters.tags}
                 onChange={(tags) => {
@@ -329,15 +351,15 @@ export default function BrandsPage() {
             {isLoading ? (
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
+                  <Skeleton key={i} className="w-full h-16" />
                 ))}
               </div>
             ) : isError ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="py-8 text-center text-muted-foreground">
                 Error loading brands. Please try again.
               </div>
             ) : data?.data?.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="py-8 text-center text-muted-foreground">
                 No brands found.
               </div>
             ) : (
@@ -345,7 +367,7 @@ export default function BrandsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Brand</TableHead>
+                      <TableHead>Brand Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Phone</TableHead>
                       <TableHead>Website</TableHead>
@@ -361,8 +383,8 @@ export default function BrandsPage() {
                     {data.data.map((brand) => (
                       <TableRow key={brand.id}>
                         <TableCell>
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-10 w-10">
+                          <div className="flex gap-3 items-center">
+                            <Avatar className="w-10 h-10">
                               <AvatarImage
                                 src={getImageUrl(brand.logo)}
                                 alt={brand.name}
@@ -372,7 +394,9 @@ export default function BrandsPage() {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="font-medium">{brand.name || "-"}</div>
+                              <div className="font-medium">
+                                {brand.name || "-"}
+                              </div>
                             </div>
                           </div>
                         </TableCell>
@@ -405,7 +429,10 @@ export default function BrandsPage() {
                           {brand.category ? (
                             <Badge
                               variant="outline"
-                              className={cn("border", getCategoryColor(brand.category))}
+                              className={cn(
+                                "border",
+                                getCategoryColor(brand.category),
+                              )}
                             >
                               {formatCategoryLabel(brand.category)}
                             </Badge>
@@ -433,7 +460,9 @@ export default function BrandsPage() {
                                 )}
                               </>
                             ) : (
-                              <span className="text-muted-foreground text-sm">-</span>
+                              <span className="text-sm text-muted-foreground">
+                                -
+                              </span>
                             )}
                           </div>
                         </TableCell>
@@ -441,7 +470,10 @@ export default function BrandsPage() {
                           {brand.profileStatus ? (
                             <Badge
                               variant="outline"
-                              className={cn("border", getProfileStatusColor(brand.profileStatus))}
+                              className={cn(
+                                "border",
+                                getProfileStatusColor(brand.profileStatus),
+                              )}
                             >
                               {brand.profileStatus.replace(/_/g, " ")}
                             </Badge>
@@ -453,7 +485,10 @@ export default function BrandsPage() {
                           {brand.approvalStatus ? (
                             <Badge
                               variant="outline"
-                              className={cn("border", getApprovalStatusColor(brand.approvalStatus))}
+                              className={cn(
+                                "border",
+                                getApprovalStatusColor(brand.approvalStatus),
+                              )}
                             >
                               {brand.approvalStatus}
                             </Badge>
@@ -463,13 +498,24 @@ export default function BrandsPage() {
                         </TableCell>
                         <TableCell>{formatDate(brand.createdAt)}</TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(brand)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
+                          <div className="flex items-center justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => handleView(brand)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => handleEdit(brand)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -477,7 +523,7 @@ export default function BrandsPage() {
                 </Table>
 
                 {/* Pagination */}
-                <div className="flex items-center justify-between mt-4">
+                <div className="flex justify-between items-center mt-4">
                   <div className="text-sm text-muted-foreground">
                     Page {data.pagination.page} of {data.pagination.totalPages}
                   </div>
@@ -488,7 +534,7 @@ export default function BrandsPage() {
                       onClick={handlePreviousPage}
                       disabled={!data.pagination.hasPrevious}
                     >
-                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      <ChevronLeft className="mr-1 w-4 h-4" />
                       Previous
                     </Button>
                     <Button
@@ -498,7 +544,7 @@ export default function BrandsPage() {
                       disabled={!data.pagination.hasNext}
                     >
                       Next
-                      <ChevronRight className="h-4 w-4 ml-1" />
+                      <ChevronRight className="ml-1 w-4 h-4" />
                     </Button>
                   </div>
                 </div>
@@ -507,6 +553,12 @@ export default function BrandsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <BrandDetailDialog
+        brand={viewingBrand}
+        open={isDetailDialogOpen}
+        onOpenChange={setIsDetailDialogOpen}
+      />
 
       <BrandEditDialog
         brand={editingBrand}

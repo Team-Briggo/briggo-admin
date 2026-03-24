@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { TagInput } from "@/components/ui/tag-input";
+import { Switch } from "@/components/ui/switch";
 import { useUpdateBrand } from "@/hooks/use-update-brand";
 import { useAllBrandTags } from "@/hooks/use-all-brand-tags";
 
@@ -58,6 +59,14 @@ export function BrandEditDialog({ brand, open, onOpenChange }) {
     approvalStatus: "PENDING",
     profileCompletionPercentage: 0,
     tags: [],
+    creatorActiveListing: false,
+    marketplaceActiveListing: false,
+    commisionDistribution: {
+      customerDiscount: 0,
+      creatorCommission: 0,
+      briggoCommission: 0,
+      pgCommission: 0,
+    },
   });
 
   const { mutate: updateBrand, isPending } = useUpdateBrand();
@@ -77,6 +86,14 @@ export function BrandEditDialog({ brand, open, onOpenChange }) {
         approvalStatus: brand.approvalStatus || "PENDING",
         profileCompletionPercentage: brand.profileCompletionPercentage || 0,
         tags: brand.tags || [],
+        creatorActiveListing: brand.creatorActiveListing || false,
+        marketplaceActiveListing: brand.marketplaceActiveListing || false,
+        commisionDistribution: brand.commisionDistribution || {
+          customerDiscount: 0,
+          creatorCommission: 0,
+          briggoCommission: 0,
+          pgCommission: 0,
+        },
       });
     }
   }, [brand]);
@@ -103,6 +120,14 @@ export function BrandEditDialog({ brand, open, onOpenChange }) {
       profileCompletionPercentage:
         parseInt(formData.profileCompletionPercentage) || 0,
       tags: formData.tags,
+      creatorActiveListing: formData.creatorActiveListing,
+      marketplaceActiveListing: formData.marketplaceActiveListing,
+      commisionDistribution: {
+        customerDiscount: parseFloat(formData.commisionDistribution.customerDiscount) || 0,
+        creatorCommission: parseFloat(formData.commisionDistribution.creatorCommission) || 0,
+        briggoCommission: parseFloat(formData.commisionDistribution.briggoCommission) || 0,
+        pgCommission: parseFloat(formData.commisionDistribution.pgCommission) || 0,
+      },
     };
 
     updateBrand(
@@ -322,6 +347,145 @@ export function BrandEditDialog({ brand, open, onOpenChange }) {
                 Add relevant tags to categorize the brand
               </p>
             </div>
+          </div>
+
+          {/* Listing Settings */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Listing Settings</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Creator Active Listing</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Enable brand listing for creators
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.creatorActiveListing}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("creatorActiveListing", checked)
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Marketplace Active Listing</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Enable brand listing in marketplace
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.marketplaceActiveListing}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("marketplaceActiveListing", checked)
+                  }
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Commission Distribution */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Commission Distribution</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="customerDiscount">
+                  Customer Discount (%)
+                </Label>
+                <Input
+                  id="customerDiscount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value={formData.commisionDistribution.customerDiscount}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      commisionDistribution: {
+                        ...prev.commisionDistribution,
+                        customerDiscount: e.target.value,
+                      },
+                    }))
+                  }
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="creatorCommission">
+                  Creator Commission (%)
+                </Label>
+                <Input
+                  id="creatorCommission"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value={formData.commisionDistribution.creatorCommission}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      commisionDistribution: {
+                        ...prev.commisionDistribution,
+                        creatorCommission: e.target.value,
+                      },
+                    }))
+                  }
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="briggoCommission">
+                  Briggo Commission (%)
+                </Label>
+                <Input
+                  id="briggoCommission"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value={formData.commisionDistribution.briggoCommission}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      commisionDistribution: {
+                        ...prev.commisionDistribution,
+                        briggoCommission: e.target.value,
+                      },
+                    }))
+                  }
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="pgCommission">Payment Gateway Commission (%)</Label>
+                <Input
+                  id="pgCommission"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value={formData.commisionDistribution.pgCommission}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      commisionDistribution: {
+                        ...prev.commisionDistribution,
+                        pgCommission: e.target.value,
+                      },
+                    }))
+                  }
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Define commission distribution percentages for each party
+            </p>
           </div>
         </div>
 

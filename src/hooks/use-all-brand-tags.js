@@ -11,6 +11,7 @@ export function useAllBrandTags() {
       const data = await apiClient.graphql({
         query: LIST_BRANDS,
         variables: {
+          filter: {},
           pagination: { page: 1, limit: 1000 }, // Fetch many brands to get all tags
         },
       });
