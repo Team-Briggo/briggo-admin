@@ -165,8 +165,10 @@ export function BrandEditDialog({ brand, open, onOpenChange }) {
 
               <div className="grid gap-2">
                 <Label>Phone</Label>
-                <div className="text-sm py-2 px-3 bg-muted rounded-md">
-                  {formData.phone || <span className="text-muted-foreground">Not provided</span>}
+                <div className="px-3 py-2 text-sm rounded-md bg-muted">
+                  {formData.phone || (
+                    <span className="text-muted-foreground">Not provided</span>
+                  )}
                 </div>
               </div>
 
