@@ -308,6 +308,10 @@ export function BrandDetailDialog({ brand, open, onOpenChange }) {
                   label="Payment Gateway Commission"
                   value={`${brand.commisionDistribution.pgCommission || 0}%`}
                 />
+                <InfoRow
+                  label="Commission Processing Delay"
+                  value={brand.commissionProcessingDelay !== undefined && brand.commissionProcessingDelay !== null ? `${brand.commissionProcessingDelay} days` : "-"}
+                />
               </div>
             </div>
           )}

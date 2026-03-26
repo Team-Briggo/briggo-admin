@@ -59,6 +59,7 @@ export const LIST_BRANDS = `
           pgCommission
           __typename
         }
+        commissionProcessingDelay
         creatorActiveListing
         marketplaceActiveListing
         __typename
@@ -137,6 +138,7 @@ export const UPDATE_BRAND = `
           pgCommission
           __typename
         }
+        commissionProcessingDelay
         creatorActiveListing
         marketplaceActiveListing
         __typename

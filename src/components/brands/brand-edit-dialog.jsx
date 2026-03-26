@@ -66,6 +66,7 @@ export function BrandEditDialog({ brand, open, onOpenChange, allTags = [] }) {
       briggoCommission: 0,
       pgCommission: 0,
     },
+    commissionProcessingDelay: 0,
   });
 
   const { mutate: updateBrand, isPending } = useUpdateBrand();
@@ -92,6 +93,7 @@ export function BrandEditDialog({ brand, open, onOpenChange, allTags = [] }) {
           briggoCommission: 0,
           pgCommission: 0,
         },
+        commissionProcessingDelay: brand.commissionProcessingDelay || 0,
       });
     }
   }, [brand]);
@@ -126,6 +128,7 @@ export function BrandEditDialog({ brand, open, onOpenChange, allTags = [] }) {
         briggoCommission: parseFloat(formData.commisionDistribution.briggoCommission) || 0,
         pgCommission: parseFloat(formData.commisionDistribution.pgCommission) || 0,
       },
+      commissionProcessingDelay: parseInt(formData.commissionProcessingDelay) || 0,
     };
 
     updateBrand(
@@ -480,9 +483,25 @@ export function BrandEditDialog({ brand, open, onOpenChange, allTags = [] }) {
                   placeholder="0.00"
                 />
               </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="commissionProcessingDelay">
+                  Commission Processing Delay (days)
+                </Label>
+                <Input
+                  id="commissionProcessingDelay"
+                  type="number"
+                  min="0"
+                  value={formData.commissionProcessingDelay}
+                  onChange={(e) =>
+                    handleInputChange("commissionProcessingDelay", e.target.value)
+                  }
+                  placeholder="0"
+                />
+              </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              Define commission distribution percentages for each party
+              Define commission distribution percentages and processing delay
             </p>
           </div>
         </div>
